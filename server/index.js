@@ -13,8 +13,12 @@ const PORT = process.env.PORT || 8000;
 
 // Import routes
 import userRoutes from './routes/user.js';
-app.use('/api', userRoutes);
+import courseRoutes from './routes/course.js';
+import adminRoutes from './routes/admin.js';
 
+app.use('/api', userRoutes);
+app.use('/api', courseRoutes);
+app.use('/api', adminRoutes);
 // Start the server and connect to the database
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
