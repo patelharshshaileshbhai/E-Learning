@@ -17,17 +17,32 @@ export const getSingleCourse=TryCatch(async(req,res)=>{
     res.status(200).json({course})
 })
 
-export const fetchLectures=TryCatch(async(req,res)=>{
-    const lectures=await Lecture.findOne({course:req.params.id});
-    
-     const user=await User.findById(req.user._id)
-     
-    if(user.role==="admin") {return res.status(200).json({lectures})
-    };
-    if(!user.subscription.includes(user.id)) {
-        return res.status(401).json({message:"Please subscribe to access this resource"})};
-    res.status(200).json({lectures});
-})
+export const fetchLectures = TryCatch(async (req, res) => {
+    const lectures = await Lecture.findOne({ course: req.params.id });
+    const user = await User.findById(req.user._id);
+
+    if (user.role === "admin") {
+        return res.status(200).json({ lectures });
+    }
+
+    if (user.role === "user") {
+        if (!lectures) return res.status(404).json({ message: "No lectures found" });
+
+        // Check if the course is already in the subscription
+        const subscriptionIndex = user.subscription.findIndex(sub => sub.course.equals(req.params.id));
+
+        if (subscriptionIndex !== -1) {
+            // If course is found, increment the access count
+            user.subscription[subscriptionIndex].accessCount += 1;
+        } else {
+            // If course is not found, add it to the subscription with an access count of 1
+            user.subscription.push({ course: req.params.id, accessCount: 1 });
+        }
+
+        await user.save();
+        return res.status(200).json({ lectures });
+    }
+});
 
 export const fetchLecture=TryCatch(async(req,res)=>{
     const lecture=await Lecture.findById(req.params.id);
@@ -90,3 +105,7 @@ export const deleteCourse = TryCatch(async (req, res) => {
     }
 });
 
+export const getMyCourses=TryCatch(async(req,res)=>{
+    const courses=await Courses.find({_id:req.user.subscription});
+    res.status(200).json({courses})
+})

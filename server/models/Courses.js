@@ -32,6 +32,11 @@ const courseSchema = new mongoose.Schema({
     createdAt:{
         type: Date,
         default: Date.now
+    },
+    uniqueKey: {
+        type:Number,
+        unique:true,
+        required:true
     }
 });
 

@@ -19,8 +19,8 @@ const userSchema = new mongoose.Schema({
         default: "user"
     },
     subscription: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Course"
+        course: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
+        accessCount: { type: Number, default: 0 }
     }]
 }, { timestamps: true });
 

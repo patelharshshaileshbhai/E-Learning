@@ -1,8 +1,9 @@
 import TryCatch from "../middlewares/TryCatch.js";
 import {Courses} from '../models/Courses.js'
 import { Lecture } from "../models/lecture.js";
+import { User } from "../models/user.js";
 export const createCourse=TryCatch(async(req,res)=>{
-    const {title,description,price,duration,category,createdBy}=req.body;
+    const {title,description,price,duration,category,createdBy,uniqueKey}=req.body;
 
 const image=req.file;
 
@@ -13,7 +14,8 @@ const image=req.file;
         price,
         duration,
         category,
-        createdBy
+        createdBy,
+        uniqueKey
     })
     res.status(201).json({message:"Course created successfully"})
 })
@@ -33,3 +35,21 @@ export const addLecture=TryCatch(async(req,res)=>{
     })
     res.status(200).json({message:"Lecture added successfully",lecture})
 })
+
+export const getAllStats=TryCatch(async(req,res)=>{
+    const totalCourses=(await Courses.find()).length;
+    const totalLectures=(await Lecture.find()).length;
+    const totalUsers=(await User.find()).length;
+
+    
+
+    const stats={
+        totalCourses,
+        totalLectures,
+        totalUsers
+    }
+
+    
+
+    res.status(200).json({stats})
+    })
